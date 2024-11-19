@@ -83,10 +83,10 @@ record_count = df_Final.count()
 print(f"Number of record after transformation : {record_count}")
 
 # Azure SQL Database credentials and configuration
-server = 'niraj-b.database.windows.net'  # Azure SQL Server name
-database = 'DataEngg'  # Database name
-username = 'Niraj'  # Database username
-password = 'Bleach@8055'  # Database password
+server = 'Your Server Name'  # Azure SQL Server name
+database = 'Your DB Name'  # Database name
+username = 'Your User name'  # Database username
+password = 'Your Password'  # Database password
 driver = '{ODBC Driver 17 for SQL Server}'  # ODBC driver for SQL Server
 
 # Connection string for Azure SQL Database

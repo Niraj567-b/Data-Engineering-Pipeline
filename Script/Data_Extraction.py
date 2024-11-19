@@ -5,8 +5,8 @@ import time
 import os
 
 # OMDb API configuration
-API_KEY = "c8ff9c7d"  # replace with your OMDb API key
-BASE_URL = "http://www.omdbapi.com/"
+API_KEY = "Your API KEY"  # replace with your API key
+BASE_URL = "API URL" #replace with your API URL
 
 # List of genres for random selection
 genres = ["Action", "Comedy", "Drama", "Thriller", "Romance", "Sci-Fi", "Horror", 
