@@ -1,6 +1,6 @@
 # Movie Data ETL Pipeline
 
-This project implements an ETL pipeline that extracts movie data from the OMDb API, transforms it using Apache Spark (PySpark), and loads the processed data into an Azure SQL database. The pipeline is scheduled to run monthly at midnight (12:00 AM) on the first day of the month using Apache Airflow.
+This project implements an ETL pipeline that extracts data from an API, transforms it using Apache Spark (PySpark), and loads the processed data into an Azure SQL database. The pipeline is scheduled to run monthly at midnight (12:00 AM) on the first day of the month using Apache Airflow.
 
 ## Project Architecture
 
