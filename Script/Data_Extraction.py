@@ -30,11 +30,10 @@ def fetch_movies_random_genre():
 
     print(f"Fetching movies of genre '{genre}'...")
 
-    # Get the root directory of the workspace
-    main_directory = os.path.abspath(os.path.join(os.getcwd(), ".."))  # Go one level up to the main directory
-    data_dir = os.path.join(main_directory, "data")  # Create the full path for 'data' directory in the main directory
+    # Set the directory to save the file
+    data_dir = "/workspaces/Data-Engineering-Pipeline/Data"
     
-    while len(movies) < 15:
+    while len(movies) < 50:
         try:
             response = requests.get(BASE_URL, params={"s": genre, "apikey": API_KEY, "type": "movie", "page": page})
             data = response.json()
@@ -56,11 +55,11 @@ def fetch_movies_random_genre():
         page += 1
         time.sleep(1)
 
-    # Create directory only if it doesn't exist in the main directory
+    # Create directory only if it doesn't exist
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
     
-    # Save the movie data to the 'data' directory in the main directory
+    # Save the movie data to the specified directory
     with open(f"{data_dir}/{genre}_movies.json", "w") as outfile:
         json.dump(movies, outfile, indent=4)
 
@@ -68,3 +67,4 @@ def fetch_movies_random_genre():
 
 # Run the data extraction
 fetch_movies_random_genre()
+

@@ -13,7 +13,7 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 
-data_dir = "/workspaces/Data-Engineering-Pipeline/data"  # Ensure this directory exists and has JSON files
+data_dir = "/workspaces/Data-Engineering-Pipeline/Data"  # Ensure this directory exists and has JSON files
 
 def get_latest_json_file(directory):
     json_files = glob.glob(os.path.join(directory, "*_movies.json"))
@@ -32,6 +32,8 @@ if json_file_path:
 
     # Drop unnecessary columns
     df = df.drop("Poster", "Production", "DVD", "Website")
+    df = df.dropDuplicates(["imdbID"])
+
 
     # Explode and pivot the Ratings array
     df_exploded = df.select("imdbID", "Title", "Genre", explode(col("Ratings")).alias("rating"))
@@ -54,13 +56,13 @@ else:
 
 # Convert the columns of df_Final to match the SQL Server schema
 df_Final = df_final \
-    .withColumn("Released", to_date(col("Released"), "yyyy-MM-dd")) \
+    .withColumn("Released",col("Released").cast(StringType())) \
     .withColumn("Year", col("Year").cast(IntegerType())) \
     .withColumn("Metascore", col("Metascore").cast(IntegerType())) \
     .withColumn("imdbRating", col("imdbRating").cast(FloatType())) \
-    .withColumn("Internet Movie Database", col("Internet Movie Database").cast(FloatType())) \
-    .withColumn("Rotten Tomatoes", col("Rotten Tomatoes").cast(FloatType())) \
-    .withColumn("Metacritic", col("Metacritic").cast(FloatType())) \
+    .withColumn("Internet Movie Database", col("Internet Movie Database").cast(StringType())) \
+    .withColumn("Rotten Tomatoes", col("Rotten Tomatoes").cast(StringType())) \
+    .withColumn("Metacritic", col("Metacritic").cast(StringType())) \
     .withColumn("imdbVotes", regexp_replace(col("imdbVotes"), ",", "").cast(LongType())) \
     .withColumn("BoxOffice", regexp_replace(col("BoxOffice"), "[$,]", "").cast(LongType())) \
     .withColumn("Type", col("Type").cast(StringType())) \
@@ -76,6 +78,9 @@ df_Final = df_final \
     .withColumn("Language", col("Language").cast(StringType())) \
     .withColumn("Awards", col("Awards").cast(StringType())) \
     .withColumn("Response", col("Response").cast(StringType()))
+
+record_count = df_Final.count()
+print(f"Number of record after transformation : {record_count}")
 
 # Azure SQL Database credentials and configuration
 server = 'niraj-b.database.windows.net'  # Azure SQL Server name
@@ -131,22 +136,16 @@ def handle_null_values(row):
         row['Year'] if row['Year'] else None  # Ensure this is not NULL if not applicable
     )
 
-# Example function to insert data into Movies table
-
 def insert_data(df):
-    # Loop through the dataframe rows
+   
     for row in df.collect():
-        # Handle NULL values by replacing missing values with None
         data = handle_null_values(row)
         
-        # Execute the insert query with the correct number of parameters
         cursor.execute(insert_query, data)
-        conn.commit()  # Commit after each insertion (you can also batch commits for performance)
+        conn.commit()  # Commit after each insertion
 
     print(f"Successfully inserted {df.count()} records into the [dbo].[Movies] table.")
 
-# Assuming df_final is your final PySpark DataFrame after transformations
-# Example PySpark DataFrame (df_final) should be available at this point
 
 insert_data(df_Final)
 
